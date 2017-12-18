@@ -24,6 +24,26 @@ init
 
 	vars.injLength = 50;
 
+	vars.headSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
+	vars.headSizePtr = game.ReadValue<int>((IntPtr)(vars.headSizePtr + 0x08));
+	vars.headSizePtr = (IntPtr)(vars.headSizePtr + 0x2AC);
+
+	vars.chestSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
+	vars.chestSizePtr = game.ReadValue<int>((IntPtr)(vars.chestSizePtr + 0x08));
+	vars.chestSizePtr = (IntPtr)(vars.chestSizePtr + 0x2B0);
+
+	vars.stomachSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
+	vars.stomachSizePtr = game.ReadValue<int>((IntPtr)(vars.stomachSizePtr + 0x08));
+	vars.stomachSizePtr = (IntPtr)(vars.stomachSizePtr + 0x2B4);
+
+	vars.armSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
+	vars.armSizePtr = game.ReadValue<int>((IntPtr)(vars.armSizePtr + 0x08));
+	vars.armSizePtr = (IntPtr)(vars.armSizePtr + 0x2B8);
+
+	vars.legSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
+	vars.legSizePtr = game.ReadValue<int>((IntPtr)(vars.legSizePtr + 0x08));
+	vars.legSizePtr = (IntPtr)(vars.legSizePtr + 0x2BC);
+
 }
 
 update
@@ -70,6 +90,22 @@ update
 		byte[] payload = vars.bytes;
 		game.WriteBytes(ptr, payload);
 		print("changing color to {" + vars.rgb[2] + ", " + vars.rgb[1] + ", " + vars.rgb[0] + "}");
+
+		ptr = vars.headSizePtr;
+		game.WriteBytes(ptr, payload);
+
+		ptr = vars.chestSizePtr;
+		game.WriteBytes(ptr, payload);
+
+		ptr = vars.stomachSizePtr;
+		game.WriteBytes(ptr, payload);
+
+		ptr = vars.armSizePtr;
+		game.WriteBytes(ptr, payload);
+
+		ptr = vars.legSizePtr;
+		game.WriteBytes(ptr, payload);
+
 	}
 
 	vars.updateCnt++;
