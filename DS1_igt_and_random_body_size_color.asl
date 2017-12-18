@@ -90,21 +90,25 @@ update
 		byte[] payload = vars.bytes;
 		game.WriteBytes(ptr, payload);
 		print("changing color to {" + vars.rgb[2] + ", " + vars.rgb[1] + ", " + vars.rgb[0] + "}");
+		
+		float newFloatValue = (float)5;
 
 		ptr = vars.headSizePtr;
-		game.WriteBytes(ptr, payload);
+		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
 
 		ptr = vars.chestSizePtr;
-		game.WriteBytes(ptr, payload);
+		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
 
 		ptr = vars.stomachSizePtr;
-		game.WriteBytes(ptr, payload);
+		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
 
+		newFloatValue = (float)-5;
+		
 		ptr = vars.armSizePtr;
-		game.WriteBytes(ptr, payload);
+		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
 
 		ptr = vars.legSizePtr;
-		game.WriteBytes(ptr, payload);
+		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
 
 	}
 
