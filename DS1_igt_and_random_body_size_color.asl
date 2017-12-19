@@ -23,27 +23,35 @@ init
 	vars.rgb_ptr = (IntPtr)(vars.rgb_ptr + 0x3D2);
 
 	vars.injLength = 50;
-
+	
+	vars.maxRando = (float)200;
+	vars.minRando = (float)-200;
+	vars.randoSpeed = 2;
+	
 	vars.headSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.headSizePtr = game.ReadValue<int>((IntPtr)(vars.headSizePtr + 0x08));
 	vars.headSizePtr = (IntPtr)(vars.headSizePtr + 0x2AC);
-
+	vars.headSizeValue = (float)0;
+	
 	vars.chestSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.chestSizePtr = game.ReadValue<int>((IntPtr)(vars.chestSizePtr + 0x08));
 	vars.chestSizePtr = (IntPtr)(vars.chestSizePtr + 0x2B0);
+	vars.chestSizeValue = (float)0;
 
 	vars.stomachSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.stomachSizePtr = game.ReadValue<int>((IntPtr)(vars.stomachSizePtr + 0x08));
 	vars.stomachSizePtr = (IntPtr)(vars.stomachSizePtr + 0x2B4);
+	vars.stomachSizeValue = (float)0;
 
 	vars.armSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.armSizePtr = game.ReadValue<int>((IntPtr)(vars.armSizePtr + 0x08));
 	vars.armSizePtr = (IntPtr)(vars.armSizePtr + 0x2B8);
+	vars.armSizeValue = (float)0;
 
 	vars.legSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.legSizePtr = game.ReadValue<int>((IntPtr)(vars.legSizePtr + 0x08));
 	vars.legSizePtr = (IntPtr)(vars.legSizePtr + 0x2BC);
-
+	vars.legSizeValue = (float)0;
 }
 
 update
@@ -91,25 +99,74 @@ update
 		game.WriteBytes(ptr, payload);
 		print("changing color to {" + vars.rgb[2] + ", " + vars.rgb[1] + ", " + vars.rgb[0] + "}");
 		
-		float newFloatValue = (float)5;
-
-		ptr = vars.headSizePtr;
-		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
-
-		ptr = vars.chestSizePtr;
-		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
-
-		ptr = vars.stomachSizePtr;
-		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
-
-		newFloatValue = (float)-5;
+	}
+	else if (vars.updateCnt % vars.randoSpeed == 0) {
+	
+		float newFloatValue = vars.headSizeValue + (float)vars.rng.Next(-1, 2);
+		vars.headSizeValue = newFloatValue;		
 		
-		ptr = vars.armSizePtr;
-		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
-
-		ptr = vars.legSizePtr;
-		game.WriteBytes(ptr, BitConverter.GetBytes(newFloatValue);
-
+		if (vars.headSizeValue > vars.maxRando) {
+			vars.headSizeValue = vars.maxRando -20;
+		}
+		else if (vars.headSizeValue < vars.minRando) {
+			vars.headSizeValue = vars.minRando +20;
+		}
+		
+		IntPtr ptr2 = vars.headSizePtr;
+		game.WriteBytes(ptr2, BitConverter.GetBytes(newFloatValue));
+		
+		
+		newFloatValue = vars.chestSizeValue + (float)vars.rng.Next(-1, 2);
+		vars.chestSizeValue = newFloatValue;	
+		
+		if (vars.chestSizeValue > vars.maxRando) {
+			vars.chestSizeValue = vars.maxRando -20;
+		}
+		else if (vars.chestSizeValue < vars.minRando) {
+			vars.chestSizeValue = vars.minRando +20;
+		}
+		
+		IntPtr ptr3 = vars.chestSizePtr;
+		game.WriteBytes(ptr3, BitConverter.GetBytes(newFloatValue));
+		
+		newFloatValue = vars.stomachSizeValue + (float)vars.rng.Next(-1, 2);
+		vars.stomachSizeValue = newFloatValue;	
+		
+		if (vars.stomachSizeValue > vars.maxRando) {
+			vars.stomachSizeValue = vars.maxRando -20;
+		}
+		else if (vars.stomachSizeValue < vars.minRando) {
+			vars.stomachSizeValue = vars.minRando +20;
+		}
+		
+		IntPtr ptr4 = vars.stomachSizePtr;
+		game.WriteBytes(ptr4, BitConverter.GetBytes(newFloatValue));
+		
+		newFloatValue = vars.armSizeValue + (float)vars.rng.Next(-1, 2);
+		vars.armSizeValue = newFloatValue;	
+		
+		if (vars.armSizeValue > vars.maxRando) {
+			vars.armSizeValue = vars.maxRando -20;
+		}
+		else if (vars.armSizeValue < vars.minRando) {
+			vars.armSizeValue = vars.minRando +20;
+		}
+		
+		IntPtr ptr5 = vars.armSizePtr;
+		game.WriteBytes(ptr5, BitConverter.GetBytes(newFloatValue));
+		
+		newFloatValue = vars.legSizeValue + (float)vars.rng.Next(-1, 2);
+		vars.legSizeValue = newFloatValue;	
+		
+		if (vars.legSizeValue > vars.maxRando) {
+			vars.legSizeValue = vars.maxRando -20;
+		}
+		else if (vars.legSizeValue < vars.minRando) {
+			vars.legSizeValue = vars.minRando +20;
+		}
+		
+		IntPtr ptr6 = vars.legSizePtr;
+		game.WriteBytes(ptr6, BitConverter.GetBytes(newFloatValue));
 	}
 
 	vars.updateCnt++;
