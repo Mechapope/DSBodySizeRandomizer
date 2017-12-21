@@ -58,20 +58,17 @@ init
 	vars.legSizePtr = (IntPtr)(vars.legSizePtr + 0x2BC);
 	vars.legSizeValue = (float)0;
 	
-	//TODO find hair RBG addresses, also try with one pointer vs 3
-	//TODO change eyes to same color as hair?
 	vars.rgb_hair_red_ptr = game.ReadValue<int>((IntPtr)0x1378700);
-	vars.rgb_hair_red_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_ptr + 0x08));
-	vars.rgb_hair_red_ptr = (IntPtr)(vars.rgb_ptr + 0x3D2);
+	vars.rgb_hair_red_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_hair_red_ptr + 0x08));
+	vars.rgb_hair_red_ptr = (IntPtr)(vars.rgb_hair_red_ptr + 0x380);
 	
 	vars.rgb_hair_green_ptr = game.ReadValue<int>((IntPtr)0x1378700);
-	vars.rgb_hair_green_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_ptr + 0x08));
-	vars.rgb_hair_green_ptr = (IntPtr)(vars.rgb_ptr + 0x3D2);
+	vars.rgb_hair_green_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_hair_green_ptr + 0x08));
+	vars.rgb_hair_green_ptr = (IntPtr)(vars.rgb_hair_green_ptr + 0x384);
 	
 	vars.rgb_hair_blue_ptr = game.ReadValue<int>((IntPtr)0x1378700);
-	vars.rgb_hair_blue_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_ptr + 0x08));
-	vars.rgb_hair_blue_ptr = (IntPtr)(vars.rgb_ptr + 0x3D2);
-	
+	vars.rgb_hair_blue_ptr = game.ReadValue<int>((IntPtr)(vars.rgb_hair_blue_ptr + 0x08));
+	vars.rgb_hair_blue_ptr = (IntPtr)(vars.rgb_hair_blue_ptr + 0x388);	
 }
 
 update
@@ -187,72 +184,81 @@ update
 		
 		IntPtr ptr6 = vars.legSizePtr;
 		game.WriteBytes(ptr6, BitConverter.GetBytes(newFloatValue));
+		
+		int hair_stage = vars.hair_rbg_stage;
+		float hairG = vars.hair_g;
+		float hairR = vars.hair_r;
+		float hairB = vars.hair_b;		
+		
+		switch (hair_stage)
+		{
+			case 0:
+				hairG++;
+				if (hairG == 5)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			case 1:
+				hairR--;
+				if (hairR == 0)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			case 2:
+				hairB++;
+				if (hairB == 5)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			case 3:
+				hairG--;
+				if (hairG == 0)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			case 4:
+				hairR++;
+				if (hairR == 5)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			case 5:
+				hairB--;
+				if (hairB == 0)
+				{
+					hair_stage++;
+				}
+				break;
+				
+			default:
+				hair_stage = 0;
+				break;
+		}
+		
+		vars.hair_rbg_stage = hair_stage;
+		vars.hair_r = hairR;
+		vars.hair_g = hairG;
+		vars.hair_b = hairB;
+		
+		IntPtr hair_red_ptr = vars.rgb_hair_red_ptr;
+		game.WriteBytes(hair_red_ptr, BitConverter.GetBytes(hairR));
+		
+		IntPtr hair_green_ptr = vars.rgb_hair_green_ptr;
+		game.WriteBytes(hair_green_ptr, BitConverter.GetBytes(hairG));
+		
+		IntPtr hair_blue_ptr = vars.rgb_hair_blue_ptr;
+		game.WriteBytes(hair_blue_ptr, BitConverter.GetBytes(hairB));		
 	}
-	
-	
-	switch (vars.hair_rbg_stage)
-	{
-		case 0:
-			vars.hair_g++;
-			if (vars.hair_g == 255)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		case 1:
-			vars.hair_r--;
-			if (vars.hair_r == 0)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		case 2:
-			vars.hair_b++;
-			if (vars.hair_b == 255)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		case 3:
-			vars.hair_g--;
-			if (vars.hair_g == 0)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		case 4:
-			vars.hair_r++;
-			if (vars.hair_r == 255)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		case 5:
-			vars.hair_b--;
-			if (vars.hair_b == 0)
-			{
-				vars.hair_rbg_stage++;
-			}
-			break;
-			
-		default:
-			vars.hair_rbg_stage = 0;
-			break;
-	}
-	
-	IntPtr hair_red_ptr = vars.rgb_hair_red_ptr;
-	game.WriteBytes(ptr, BitConverter.GetBytes(vars.hair_r));
-	
-	IntPtr hair_green_ptr = vars.rgb_hair_green_ptr;
-	game.WriteBytes(ptr, BitConverter.GetBytes(vars.hair_g));
-	
-	IntPtr hair_blue_ptr = vars.rgb_hair_blue_ptr;
-	game.WriteBytes(ptr, BitConverter.GetBytes(vars.hair_b));	
 
 	vars.updateCnt++;
 }
