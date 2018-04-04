@@ -5,6 +5,20 @@ state("DarkSouls")
 
 init
 {
+	//USER CONFIGURABLE STUFF
+	vars.randomSkinColor = true;
+	vars.changingBodySizes = true;
+	vars.hairColorShift = true;
+	
+	//changing body size options
+	vars.maxBodyPartSize = (float)10;
+	vars.minBodyPartSize = (float)-10;
+	vars.bodySizeChangeAmount = 1;
+	vars.bodySizeChangeRate = 20;
+	vars.hairColorChangeRate = 20;
+
+	//END OF USER CONFIGURABLE STUFF
+
 	vars.rgb = new int[3] {255,255,255};
 	vars.x = new double[50];
 	vars.bytes = new byte[50];
@@ -23,15 +37,11 @@ init
 	vars.rgb_ptr = (IntPtr)(vars.rgb_ptr + 0x3D2);
 	
 	vars.hair_rbg_stage = 0;
-	vars.hair_r = 255;
+	vars.hair_r = 5;
 	vars.hair_b = 0;
 	vars.hair_g = 0;	
 
 	vars.injLength = 50;
-	
-	vars.maxRando = (float)200;
-	vars.minRando = (float)-200;
-	vars.randoSpeed = 2;
 	
 	vars.headSizePtr = game.ReadValue<int>((IntPtr)0x1378700);
 	vars.headSizePtr = game.ReadValue<int>((IntPtr)(vars.headSizePtr + 0x08));
@@ -76,7 +86,8 @@ update
 	if(vars.timerModel.CurrentState.CurrentPhase != TimerPhase.Running){
 		vars.localIgt = 0;
 	}
-	if(vars.updateCnt % 900 == 0){
+	
+	if(vars.randomSkinColor && vars.updateCnt % 900 == 0) {
 
 		vars.rgb[0] = vars.rng.Next(0, 255); //B
 		vars.rgb[1] = vars.rng.Next(0, 255); //G
@@ -114,76 +125,182 @@ update
 		IntPtr ptr = vars.rgb_ptr;
 		byte[] payload = vars.bytes;
 		game.WriteBytes(ptr, payload);
-		print("changing color to {" + vars.rgb[2] + ", " + vars.rgb[1] + ", " + vars.rgb[0] + "}");
-		
+		print("changing color to {" + vars.rgb[2] + ", " + vars.rgb[1] + ", " + vars.rgb[0] + "}");		
 	}
-	else if (vars.updateCnt % vars.randoSpeed == 0) {
 	
-		float newFloatValue = vars.headSizeValue + (float)vars.rng.Next(-1, 2);
-		vars.headSizeValue = newFloatValue;		
+	/*
+	IF IT DOESNT WORK, TRY DIS ONE
+	
+	if (vars.changingBodySizes && vars.updateCnt % vars.bodySizeChangeRate == 0) {
+	
+		float curHeadSizeValue = vars.headSizeValue;
+		float curChestSizeValue = vars.chestSizeValue;
+		float curStomachSizeValue = vars.stomachSizeValue;
+		float curArmSizeValue = vars.armSizeValue;
+		float curLegSizeValue = vars.legSizeValue;
 		
-		if (vars.headSizeValue > vars.maxRando) {
-			vars.headSizeValue = vars.maxRando -20;
+		int maxBodySize = vars.maxBodyPartSize;
+		int minBodySize = vars.minBodyPartSize;
+		int changeAmount = vars.bodySizeChangeAmount;
+		
+		int temp = rng.Next(-1, 2);           
+
+		if (temp > 0 && (curHeadSizeValue + changeAmount) < maxBodySize)
+		{
+			curHeadSizeValue += changeAmount;
 		}
-		else if (vars.headSizeValue < vars.minRando) {
-			vars.headSizeValue = vars.minRando +20;
+		else if (temp < 0 && (curHeadSizeValue - changeAmount) > minBodySize)
+		{
+			curHeadSizeValue -= changeAmount;
 		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (curChestSizeValue + changeAmount) < maxBodySize)
+		{
+			curChestSizeValue += changeAmount;
+		}
+		else if (temp < 0 && (curChestSizeValue - changeAmount) > minBodySize)
+		{
+			curChestSizeValue -= changeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (curStomachSizeValue + changeAmount) < maxBodySize)
+		{
+			curStomachSizeValue += changeAmount;
+		}
+		else if (temp < 0 && (curStomachSizeValue - changeAmount) > minBodySize)
+		{
+			curStomachSizeValue -= changeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (curArmSizeValue + changeAmount) < maxBodySize)
+		{
+			curArmSizeValue += changeAmount;
+		}
+		else if (temp < 0 && (curArmSizeValue - changeAmount) > minBodySize)
+		{
+			curArmSizeValue -= changeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (curLegSizeValue + changeAmount) < maxBodySize)
+		{
+			curLegSizeValue += changeAmount;
+		}
+		else if (temp < 0 && (curLegSizeValue - changeAmount) > minBodySize)
+		{
+			curLegSizeValue -= changeAmount;
+		}	
+		
 		
 		IntPtr ptr2 = vars.headSizePtr;
-		game.WriteBytes(ptr2, BitConverter.GetBytes(newFloatValue));
-		
-		
-		newFloatValue = vars.chestSizeValue + (float)vars.rng.Next(-1, 2);
-		vars.chestSizeValue = newFloatValue;	
-		
-		if (vars.chestSizeValue > vars.maxRando) {
-			vars.chestSizeValue = vars.maxRando -20;
-		}
-		else if (vars.chestSizeValue < vars.minRando) {
-			vars.chestSizeValue = vars.minRando +20;
-		}
-		
+		game.WriteBytes(ptr2, BitConverter.GetBytes(curHeadSizeValue));
+				
 		IntPtr ptr3 = vars.chestSizePtr;
-		game.WriteBytes(ptr3, BitConverter.GetBytes(newFloatValue));
-		
-		newFloatValue = vars.stomachSizeValue + (float)vars.rng.Next(-1, 2);
-		vars.stomachSizeValue = newFloatValue;	
-		
-		if (vars.stomachSizeValue > vars.maxRando) {
-			vars.stomachSizeValue = vars.maxRando -20;
-		}
-		else if (vars.stomachSizeValue < vars.minRando) {
-			vars.stomachSizeValue = vars.minRando +20;
-		}
-		
+		game.WriteBytes(ptr3, BitConverter.GetBytes(curChestSizeValue));
+				
 		IntPtr ptr4 = vars.stomachSizePtr;
-		game.WriteBytes(ptr4, BitConverter.GetBytes(newFloatValue));
-		
-		newFloatValue = vars.armSizeValue + (float)vars.rng.Next(-1, 2);
-		vars.armSizeValue = newFloatValue;	
-		
-		if (vars.armSizeValue > vars.maxRando) {
-			vars.armSizeValue = vars.maxRando -20;
-		}
-		else if (vars.armSizeValue < vars.minRando) {
-			vars.armSizeValue = vars.minRando +20;
-		}
+		game.WriteBytes(ptr4, BitConverter.GetBytes(curStomachSizeValue));
 		
 		IntPtr ptr5 = vars.armSizePtr;
-		game.WriteBytes(ptr5, BitConverter.GetBytes(newFloatValue));
-		
-		newFloatValue = vars.legSizeValue + (float)vars.rng.Next(-1, 2);
-		vars.legSizeValue = newFloatValue;	
-		
-		if (vars.legSizeValue > vars.maxRando) {
-			vars.legSizeValue = vars.maxRando -20;
-		}
-		else if (vars.legSizeValue < vars.minRando) {
-			vars.legSizeValue = vars.minRando +20;
-		}
+		game.WriteBytes(ptr5, BitConverter.GetBytes(curArmSizeValue));
 		
 		IntPtr ptr6 = vars.legSizePtr;
-		game.WriteBytes(ptr6, BitConverter.GetBytes(newFloatValue));
+		game.WriteBytes(ptr6, BitConverter.GetBytes(curLegSizeValue));
+
+		vars.headSizeValue = curHeadSizeValue;
+        vars.chestSizeValue = curChestSizeValue;
+		vars.stomachSizeValue = curStomachSizeValue;
+	    vars.armSizeValue = curArmSizeValue;
+	    vars.legSizeValue = curLegSizeValue;
+		
+	}
+	*/
+	
+	
+	
+	if (vars.changingBodySizes && vars.updateCnt % vars.bodySizeChangeRate == 0) {
+		
+		int temp = rng.Next(-1, 2);           
+
+		if (temp > 0 && (vars.headSizeValue + vars.bodySizeChangeAmount) < vars.maxBodyPartSize)
+		{
+			vars.headSizeValue += vars.bodySizeChangeAmount;
+		}
+		else if (temp < 0 && (vars.headSizeValue - vars.bodySizeChangeAmount) > vars.minBodyPartSize)
+		{
+			vars.headSizeValue -= vars.bodySizeChangeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (vars.chestSizeValue + vars.bodySizeChangeAmount) < vars.maxBodyPartSize)
+		{
+			vars.chestSizeValue += vars.bodySizeChangeAmount;
+		}
+		else if (temp < 0 && (vars.chestSizeValue - vars.bodySizeChangeAmount) > vars.minBodyPartSize)
+		{
+			vars.chestSizeValue -= vars.bodySizeChangeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (vars.stomachSizeValue + vars.bodySizeChangeAmount) < vars.maxBodyPartSize)
+		{
+			vars.stomachSizeValue += vars.bodySizeChangeAmount;
+		}
+		else if (temp < 0 && (vars.stomachSizeValue - vars.bodySizeChangeAmount) > vars.minBodyPartSize)
+		{
+			vars.stomachSizeValue -= vars.bodySizeChangeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (vars.armSizeValue + vars.bodySizeChangeAmount) < vars.maxBodyPartSize)
+		{
+			vars.armSizeValue += vars.bodySizeChangeAmount;
+		}
+		else if (temp < 0 && (vars.armSizeValue - vars.bodySizeChangeAmount) > vars.minBodyPartSize)
+		{
+			vars.armSizeValue -= vars.bodySizeChangeAmount;
+		}
+
+		temp = rng.Next(-1, 2);
+
+		if (temp > 0 && (vars.legSizeValue + vars.bodySizeChangeAmount) < vars.maxBodyPartSize)
+		{
+			vars.legSizeValue += vars.bodySizeChangeAmount;
+		}
+		else if (temp < 0 && (vars.legSizeValue - vars.bodySizeChangeAmount) > vars.minBodyPartSize)
+		{
+			vars.legSizeValue -= vars.bodySizeChangeAmount;
+		}	
+		
+		
+		IntPtr ptr2 = vars.headSizePtr;
+		game.WriteBytes(ptr2, BitConverter.GetBytes(vars.headSizeValue));
+				
+		IntPtr ptr3 = vars.chestSizePtr;
+		game.WriteBytes(ptr3, BitConverter.GetBytes(vars.chestSizeValue));
+				
+		IntPtr ptr4 = vars.stomachSizePtr;
+		game.WriteBytes(ptr4, BitConverter.GetBytes(vars.stomachSizeValue));
+		
+		IntPtr ptr5 = vars.armSizePtr;
+		game.WriteBytes(ptr5, BitConverter.GetBytes(vars.armSizeValue));
+		
+		IntPtr ptr6 = vars.legSizePtr;
+		game.WriteBytes(ptr6, BitConverter.GetBytes(vars.legSizeValue));
+		
+	}
+	
+	if (vars.hairColorShift && vars.updateCnt % vars.hairColorChangeRate == 0) {
 		
 		int hair_stage = vars.hair_rbg_stage;
 		float hairG = vars.hair_g;
@@ -277,7 +394,3 @@ isLoading{
 		return true;
 	}
 }
-
-//vars.timerModel.CurrentState.CurrentPhase = TimerPhase.Paused;
-
-
